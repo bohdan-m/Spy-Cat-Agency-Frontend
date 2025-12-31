@@ -1,65 +1,106 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { catAPI } from './lib/api';
+import { SpyCat } from './types';
+import CatCard from './components/CatCard';
+import CatCreateForm from './components/CatCreateForm';
 
 export default function Home() {
+  const [cats, setCats] = useState<SpyCat[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchCats = async () => {
+    try {
+      const response = await catAPI.getAll();
+      setCats(response.data);
+      setError('');
+    } catch (err: any) {
+      setError(`Failed to fetch cats: ${err.message}`);
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCats();
+  }, []);
+
+  const handleCreate = async (data: Omit<SpyCat, 'id'>) => {
+    setError('');
+    try {
+      await catAPI.create(data);
+      await fetchCats();
+    } catch (err: any) {
+      if (err.response?.data) {
+        const errors = err.response.data;
+        const errorMsg = Object.entries(errors)
+          .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+          .join('; ');
+        setError(`Validation error: ${errorMsg}`);
+      } else {
+        setError(`Failed to create cat: ${err.message}`);
+      }
+    }
+  };
+
+  const handleUpdate = async (id: number, salary: string) => {
+    setError('');
+    try {
+      await catAPI.update(id, { salary });
+      await fetchCats();
+    } catch (err: any) {
+      setError(`Failed to update cat: ${err.response?.data?.message || err.message}`);
+      console.error('Update error:', err);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    setError('');
+    try {
+      await catAPI.delete(id);
+      await fetchCats();
+    } catch (err: any) {
+      setError(`Failed to delete cat: ${err.response?.data?.message || err.message}`);
+      console.error('Delete error:', err);
+    }
+  };
+
+  if (loading) return <div className="text-center py-20">Loading...</div>;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <h1 className="text-4xl font-bold mb-8 text-center">🕵️ Spy Cat Agency</h1>
+        
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="md:col-span-1">
+            <CatCreateForm onSubmit={handleCreate} />
+          </div>
+
+          <div className="md:col-span-2">
+            <h2 className="text-2xl font-bold mb-4">Spy Cats ({cats.length})</h2>
+            <div className="grid gap-4">
+              {cats.map((cat) => (
+                <CatCard
+                  key={cat.id}
+                  cat={cat}
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
