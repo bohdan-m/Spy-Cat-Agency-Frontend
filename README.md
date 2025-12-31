@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -34,3 +35,49 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+=======
+# Spy Cat Agency Frontend
+
+## Overview
+
+This is the frontend for the Spy Cat Agency test task. It provides a user interface to view, add, and manage Spy Cats.
+
+## Tech stack:
+
+- React 19
+- Next.js 16
+- TypeScript
+- TailwindCSS 4
+- Axios
+
+## Setup
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/bohdan-m/Spy-Cat-Agency-Frontend.git
+cd frontend
+````
+
+2. **Install dependencies**
+
+```bash
+npm install
+# or yarn install / pnpm install
+```
+
+4. **Run development server**
+
+```bash
+npm run dev
+# or yarn dev / pnpm dev
+```
+
+The frontend will be available at: [http://localhost:3000](http://localhost:3000)
+
+## Notes
+
+* This project uses **TypeScript**, so `.ts` and `.tsx` files are compiled automatically.
+* **TailwindCSS** is already configured for styling.
+* Axios is used for HTTP requests to the backend.
+>>>>>>> 4e66f4250242029c9a55194d8914fc9cf74e672f
