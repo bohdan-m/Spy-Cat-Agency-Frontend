@@ -37,25 +37,8 @@ npm run dev
 
 The frontend will be available at: [http://localhost:3000](http://localhost:3000)
 
-5. **Build and run for production**
-
-```bash
-npm run build
-npm start
-```
-
-6. **Linting**
-
-Check your code for errors using:
-
-```bash
-npm run lint
-```
-
 ## Notes
 
 * This project uses **TypeScript**, so `.ts` and `.tsx` files are compiled automatically.
 * **TailwindCSS** is already configured for styling.
 * Axios is used for HTTP requests to the backend.
-
-```
